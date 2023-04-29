@@ -23,7 +23,7 @@ type OldColors = {
   darkBackground: string;
 };
 declare module "@mui/material/styles/createPalette" {
-  interface CommonColors extends OldColors, Colors {}
+  interface CommonColors extends OldColors, Colors { }
 }
 
 const common: OldColors & Colors = {
@@ -48,75 +48,75 @@ const common: OldColors & Colors = {
 const systemFont = ["Roboto", "sans-serif"];
 
 export const getDesignTokens = (mode: "light" | "dark") =>
-  ({
-    palette: {
-      mode,
-      primary: {
+({
+  palette: {
+    mode,
+    primary: {
+      main: common.orange,
+      ...(mode === "dark" && {
         main: common.orange,
-        ...(mode === "dark" && {
-          main: common.orange,
-        }),
-      },
-      secondary: {
-        main: common.darkGrayBackground,
-        ...(mode === "dark" && {
-          main: common.white,
-        }),
-      },
-      light: {
+      }),
+    },
+    secondary: {
+      main: common.darkGrayBackground,
+      ...(mode === "dark" && {
         main: common.white,
-        ...(mode === "dark" && {
-          main: grey[500],
-        }),
-      },
-      warning: {
-        main: "#ffc071",
-        dark: "#ffb25e",
-      },
-      divider: mode === "dark" ? grey[200] : grey[200],
+      }),
+    },
+    light: {
+      main: common.white,
+      ...(mode === "dark" && {
+        main: grey[500],
+      }),
+    },
+    warning: {
+      main: "#ffc071",
+      dark: "#ffb25e",
+    },
+    divider: mode === "dark" ? grey[200] : grey[200],
+    background: {
+      default: common.white,
+      paper: common.white,
+    },
+    ...(mode === "dark" && {
       background: {
-        default: common.white,
-        paper: common.white,
+        default: common.darkGrayBackground,
+        paper: common.darkGrayBackground,
       },
-      ...(mode === "dark" && {
-        background: {
-          default: common.darkGrayBackground,
-          paper: common.darkGrayBackground,
-        },
-      }),
-      common,
-      ...(mode === "light" && {
-        text: {
-          primary: common.black,
-          secondary: grey[700],
-        },
-      }),
-      ...(mode === "dark" && {
-        text: {
-          primary: common.white,
-          secondary: grey[300],
-        },
-      }),
-      grey,
-    },
-    spacing: 5,
-    typography: {
-      fontFamily: [...systemFont].join(","),
-      fontFamilySystem: systemFont.join(","),
-      h1: { fontSize: "36px", color: mode === "dark" ? common.white : common.black },
-      h2: { fontSize: "32px", color: mode === "dark" ? common.white : common.black },
-      h3: { fontSize: "24px", color: mode === "dark" ? common.white : common.black },
-      h4: { fontSize: "19px", color: mode === "dark" ? common.white : common.black },
-      h5: { color: mode === "dark" ? common.white : common.black },
-      h6: { color: mode === "dark" ? common.white : common.black },
-      body1: { fontSize: "16px", color: mode === "dark" ? common.white : common.black },
-      body2: { fontSize: "19px", color: mode === "dark" ? common.white : common.black },
-      caption: { fontSize: "14.5px", color: mode === "dark" ? common.white : common.black },
-      button: {
-        textTransform: "initial",
+    }),
+    common,
+    ...(mode === "light" && {
+      text: {
+        primary: common.black,
+        secondary: grey[700],
       },
+    }),
+    ...(mode === "dark" && {
+      text: {
+        primary: common.white,
+        secondary: grey[300],
+      },
+    }),
+    grey,
+  },
+  spacing: 5,
+  typography: {
+    fontFamily: [...systemFont].join(","),
+    fontFamilySystem: systemFont.join(","),
+    h1: { fontSize: "36px", color: mode === "dark" ? common.white : common.black },
+    h2: { fontSize: "32px", color: mode === "dark" ? common.white : common.black },
+    h3: { fontSize: "24px", color: mode === "dark" ? common.white : common.black },
+    h4: { fontSize: "19px", color: mode === "dark" ? common.white : common.black },
+    h5: { color: mode === "dark" ? common.white : common.black },
+    h6: { color: mode === "dark" ? common.white : common.black },
+    body1: { fontSize: "16px", color: mode === "dark" ? common.white : common.black },
+    body2: { fontSize: "19px", color: mode === "dark" ? common.white : common.black },
+    caption: { fontSize: "14.5px", color: mode === "dark" ? common.white : common.black },
+    button: {
+      textTransform: "initial",
     },
-  } as ThemeOptions);
+  },
+} as ThemeOptions);
 
 // TODO: override with trypografy with
 // https://mui.com/material-ui/customization/typography/#adding-amp-disabling-variants
@@ -137,8 +137,14 @@ export function getThemedComponents(theme: Theme): {
           disableElevation: true,
         },
         styleOverrides: {
+          root: {
+            borderRadius: "26px",
+            fontWeight: 600,
+            fontSize: "14px",
+            color: DESIGN_SYSTEM_COLORS.primary600
+          },
           containedPrimary: {
-            backgroundColor: "common.orange",
+            backgroundColor: DESIGN_SYSTEM_COLORS.primary600,
             color: common.white,
             ":hover": {
               backgroundColor: common.orangeDark,
@@ -160,6 +166,12 @@ export function getThemedComponents(theme: Theme): {
               "&.Mui-disabled .MuiLoadingButton-loadingIndicator": {
                 color: common.orangeLight,
               },
+            },
+          },
+          {
+            props: { variant: "outlined" },
+            style: {
+              border: `solid 1px ${DESIGN_SYSTEM_COLORS.primary600}`,
             },
           },
         ],
@@ -200,30 +212,8 @@ export function getThemedComponents(theme: Theme): {
               },
             },
           },
-          // {
-          //   props: { variant: "outlined" },
-          //   style: {
-          //     "&:hover": {
-          //       backgroundColor: "red",
-          //     },
-          //   },
-          // },
         ],
       },
-      // MuiAutocomplete: {
-      //   styleOverrides: {
-      //     root: {
-      //       "&": { color: "blue", background: "red" },
-      //       "&.MuiInputLabel": {
-      //         color: theme.palette.mode === "light" ? common.darkGrayBackground : common.white,
-      //       },
-      //       // ".Mui-focuced": {
-      //       //   color: theme.palette.mode === "light" ? common.darkGrayBackground : common.white,
-      //       // },
-      //       // color: theme.palette.mode === "light" ? common.darkGrayBackground : common.white,
-      //     },
-      //   },
-      // },
       MuiDivider: {
         styleOverrides: {
           root: {
@@ -280,13 +270,6 @@ export function getThemedComponents(theme: Theme): {
           },
         },
       },
-      // MuiInputLabel: {
-      //   styleOverrides: {
-      //     root: {
-      //       color: theme.palette.mode === "dark" ? "red" : "blue",
-      //     },
-      //   },
-      // },
       MuiTab: {
         styleOverrides: {
           root: {
@@ -301,13 +284,6 @@ export function getThemedComponents(theme: Theme): {
           },
         },
       },
-      // MuiMenuItem:{
-      //   styleOverrides:{
-      //     root:{
-      //       ":hover"
-      //     }
-      //   }
-      // }
     },
   };
 }
