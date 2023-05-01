@@ -27,20 +27,18 @@ import {
 import { RiveComponentMemoized } from "./RiveMemoized";
 import { getFirestore } from 'firebase/firestore';
 import { useAuth } from '../utils/AuthContext';
+import { NodeType } from '../types';
+import NodeTypeIcon from './NodeTypeIcon';
 
-export type NodeType =
-  | "Relation"
-  | "Concept"
-  | "Code"
-  | "Reference"
-  | "Idea"
-  | "Question"
-  | "Profile"
-  | "Sequel"
-  | "Advertisement"
-  | "News"
-  | "Private";
-
+export type IAssitantRequestAction = "Practice" |
+  "TeachContent" |
+  "RemindLater" |
+  "Yes" |
+  "ExplainMore" |
+  "GiveMoreExplanation" |
+  "IllContribute" |
+  "Question" |
+  "Text";
 
 /**
  * - NORMAL: is only content
@@ -49,7 +47,7 @@ export type NodeType =
  * - PRACTICE: content + button to remind later + begin practice
  * - EXPLANATION: content + button to continue explaining + button to stop explanation
  */
-type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE";
+// type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE";
 type Message = {
   date: string,
   messages: {
@@ -64,7 +62,9 @@ type Message = {
       title: string
     }[],
     actions: {
-      type: MessageType,
+      type: IAssitantRequestAction,
+      title: string
+      variant: "contained" | "outlined"
     }[],
     hour: string
   }[]
@@ -75,15 +75,42 @@ const MESSAGES: Message[] = [
     messages: [
       {
         id: "01",
-        type: "READER", hour: "20:00", image: "", content: "Hey Carl, How can I help you today? Select one of the following options or type your question.",
-        nodes: [{ title: 'node A', id: 'sdfsdfasdf', type: "Code", }], uname: "1Cademy Assistant", actions: [{ type: "HELP" }]
+        type: "READER", hour: "20:00", image: "", content: "Message with actions",
+        nodes: [], uname: "1Cademy Assistant",
+        actions: [
+          { title: "Teach me the content of this page", type: "TeachContent", variant: "outlined" },
+          { title: "Remind me later", type: "RemindLater", variant: "outlined" },
+          { title: "Yes", type: "Yes", variant: "outlined" },
+          { title: "ExplainMore", type: "ExplainMore", variant: "outlined" },
+          { title: "Provide me an explanation", type: "GiveMoreExplanation", variant: "outlined" },
+          { title: "I’ll contribute", type: "IllContribute", variant: "outlined" },
+          { title: "Question", type: "Question", variant: "outlined" },
+          { title: "Text", type: "Text", variant: "outlined" },
+          { title: "Let’s practice", type: "Practice", variant: "outlined" },
+        ]
       },
-      { id: "02", type: "WRITER", hour: "20:00", image: "", content: "What can you tell me about Visual Communications?", nodes: [], uname: "You", actions: [] },
-      { id: "03", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
-      { id: "04", type: "WRITER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "You", actions: [] },
+      {
+        id: "03", type: "READER", hour: "20:00", image: "", content: "Message with Nodes",
+        nodes: [
+          { id: "01", title: "Advertisement Node title", type: "Advertisement" },
+          { id: "02", title: "Code Node title", type: "Code" },
+          { id: "03", title: "Concept Node title", type: "Concept" },
+          { id: "04", title: "Idea Node title", type: "Idea" },
+          { id: "05", title: "News Node title", type: "News" },
+          { id: "06", title: "Private Node title", type: "Private" },
+          { id: "07", title: "Profile Node title", type: "Profile" },
+          { id: "08", title: "Question Node title", type: "Question" },
+          { id: "09", title: "Reference Node title", type: "Reference" },
+          { id: "10", title: "Relation Node title", type: "Relation" },
+          { id: "11", title: "Sequel Node title", type: "Sequel" },
+        ],
+        uname: "1Cademy Assistant", actions: []
+      },
+      { id: "07", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
       { id: "05", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
       { id: "06", type: "WRITER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "You", actions: [] },
-      { id: "07", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
+      { id: "04", type: "WRITER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "You", actions: [] },
+      { id: "02", type: "WRITER", hour: "20:00", image: "", content: "What can you tell me about Visual Communications?", nodes: [], uname: "You", actions: [] },
     ]
   },
   { date: "11/11/11", messages: [{ id: "08", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [{ type: "Idea", id: "dfdgfsdf", title: 'adasd' }], uname: "1Cademy Assistant", actions: [] }] },
@@ -210,7 +237,7 @@ export const Chat = () => {
                   <Typography sx={{ fontWeight: 500, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{c.uname}</Typography>
                   {c.type === 'READER' && <Tooltip title={speakingMessageId === c.id ? "Stop narrating" : "Narrate message"} placement='top'>
                     <IconButton onClick={() => narrateMessage(c.id, c.content)} size='small' sx={{ p: "4px", ml: "4px" }}>
-                      {speakingMessageId === c.id ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                      {speakingMessageId === c.id ? <VolumeOffIcon sx={{ fontSize: "16px" }} /> : <VolumeUpIcon sx={{ fontSize: "16px" }} />}
                     </IconButton>
                   </Tooltip>
                   }
@@ -218,17 +245,28 @@ export const Chat = () => {
                 <Typography sx={{ fontWeight: 400, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray500 }}>{c.hour}</Typography>
               </Box>
               <Box sx={{ p: "10px 14px", borderRadius: c.type === "WRITER" ? "8px 0px 8px 8px" : "0px 8px 8px 8px", backgroundColor: c.type === "WRITER" ? DESIGN_SYSTEM_COLORS.orange100 : DESIGN_SYSTEM_COLORS.gray200 }}>
-                {/* // TODO implement link Node */}
-                {c.content}
-                <Stack spacing={'12px'}>
-                  {c.actions.map((action, idx) => {
-                    if (action.type === 'HELP') return <Fragment key={`help-${idx}`}>
-                      <Button variant='outlined' fullWidth sx={{ mt: "12px" }}>Let’s practise</Button>
-                      <Button variant='outlined' fullWidth>Teach me the content of this page</Button>
-                    </Fragment>
-                    // TODO: implement other type of actions
-                  })}
-                </Stack>
+                {c.nodes.length > 0 && <Stack spacing={'12px'} sx={{ mb: "10px" }}>
+                  {c.nodes.map((node, idx) => <Stack
+                    key={idx}
+                    spacing="8px"
+                    direction={'row'}
+                    alignItems={'center'}
+                    sx={{
+                      p: "10px 12px",
+                      backgroundColor: DESIGN_SYSTEM_COLORS.gray100,
+                      borderRadius: "8px",
+                      boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)",
+                      cursor: "pointer",
+                      ":hover": { backgroundColor: DESIGN_SYSTEM_COLORS.primary50 }
+                    }}>
+                    <NodeTypeIcon nodeType={node.type} />
+                    <Typography sx={{ fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{node.title}</Typography>
+                  </Stack>)}
+                </Stack>}
+                <Typography sx={{ fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray800 }}>{c.content}</Typography>
+                {c.actions.length > 0 && <Stack spacing={'12px'} sx={{ mt: "12px" }}>
+                  {c.actions.map((action, idx) => <Button key={idx} variant={action.variant} fullWidth >{action.title}</Button>)}
+                </Stack>}
               </Box>
             </Box>
           </Stack>)}

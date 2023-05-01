@@ -1,6 +1,19 @@
 import { Timestamp } from "firebase/firestore";
 import { Dispatch } from "react";
 
+export type NodeType =
+    | "Relation"
+    | "Concept"
+    | "Code"
+    | "Reference"
+    | "Idea"
+    | "Question"
+    | "News"
+    | "Profile"
+    | "Sequel"
+    | "Advertisement"
+    | "Private";
+
 export type ErrorOptions = {
     error: unknown;
     showErrorToast?: boolean;

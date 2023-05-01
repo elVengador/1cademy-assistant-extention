@@ -3,7 +3,8 @@ import { brandingLightTheme } from './utils/brandingTheme'
 import './styles.css'
 
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, Divider, IconButton, InputBase, Stack, TextField, ThemeProvider, Tooltip, tooltipClasses, Typography } from "@mui/material"
+import { styled } from '@mui/material/styles';
+import { Box, Button, Divider, IconButton, InputBase, Stack, TextField, ThemeProvider, Tooltip, tooltipClasses, TooltipProps, Typography } from "@mui/material"
 import { Fragment, useState } from "react"
 import { DESIGN_SYSTEM_COLORS } from './utils/colors';
 import { CustomAvatar } from './components/CustomAvatar';
@@ -57,12 +58,7 @@ function App() {
           S
         </Button>
 
-        {!displayAssistant && <Tooltip open={Boolean(selectedText)} title="I can clarify the selected text and respond to your queries." placement='top' sx={{
-          '& .MuiTooltip-tooltip': {
-            maxWidth: 250,
-          }
-        }
-        } >
+        {!displayAssistant && <CustomWidthTooltip open={Boolean(selectedText)} title={<Box sx={{ textAlign: "center" }}>I can clarify the selected text and respond to your queries.</Box>} placement='top'  >
           <Button
             onClick={() => setDisplayAssistant(true)}
             sx={{
@@ -78,7 +74,7 @@ function App() {
             }}>
             <img src={OneCademyAssistantLogo} alt="onecademy assistant logo" style={{ width: "32px", height: "32px" }} />
           </Button>
-        </Tooltip>}
+        </CustomWidthTooltip>}
       </Box>
 
       {/* chat */}
@@ -93,3 +89,12 @@ const AppWrapper = () => <ThemeProvider theme={brandingLightTheme}>
 </ThemeProvider>
 
 export default AppWrapper
+
+
+const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 250,
+  },
+});

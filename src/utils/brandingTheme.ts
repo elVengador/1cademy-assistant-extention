@@ -172,8 +172,9 @@ export function getThemedComponents(theme: Theme): {
             props: { variant: "outlined" },
             style: {
               border: `solid 1px ${DESIGN_SYSTEM_COLORS.primary600}`,
+              "&:hover": { backgroundColor: DESIGN_SYSTEM_COLORS.primary50 },
             },
-          },
+          }
         ],
       },
       MuiAppBar: {
