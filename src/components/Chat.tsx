@@ -1,11 +1,26 @@
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import OneCademyAssistantLogo from '/1cademy-assistant.svg'
 import MicIcon from '@mui/icons-material/Mic';
 import chatImage from '/chat-image.svg'
 import { Box, Button, Divider, IconButton, InputBase, Stack, Typography } from '@mui/material'
-import { Fragment } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { CustomAvatar } from './CustomAvatar'
 import { DESIGN_SYSTEM_COLORS } from '../utils/colors';
+
+export type NodeType =
+  | "Relation"
+  | "Concept"
+  | "Code"
+  | "Reference"
+  | "Idea"
+  | "Question"
+  | "Profile"
+  | "Sequel"
+  | "Advertisement"
+  | "News"
+  | "Private";
+
 
 /**
  * - NORMAL: is only content
@@ -16,15 +31,21 @@ import { DESIGN_SYSTEM_COLORS } from '../utils/colors';
  */
 type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE"
 type Message = {
-  date: string, messages: {
+  date: string,
+  messages: {
+    id: string
     type: "WRITER" | "READER"
     uname: string,
     image: string,
-    message: {
+    content: string,
+    nodes: {
+      type: NodeType,
+      id: string,
+      title: string
+    }[],
+    actions: {
       type: MessageType,
-      content: string,
-      nodeId?: string
-    },
+    }[],
     hour: string
   }[]
 }
@@ -32,22 +53,56 @@ const MESSAGES: Message[] = [
   {
     date: "12/12/12", messages: [
       {
-        type: "READER", hour: "20:00", image: "", message: {
-          type: "HELP", content: "Hey Carl, How can I help you today? Select one of the following options or type your question."
-        }, uname: "bot"
+        id: "01",
+        type: "READER", hour: "20:00", image: "", content: "Hey Carl, How can I help you today? Select one of the following options or type your question.",
+        nodes: [{ title: 'node A', id: 'sdfsdfasdf', type: "Code", }], uname: "1Cademy Assistant", actions: [{ type: "HELP" }]
       },
-      { type: "WRITER", hour: "20:00", image: "", message: { type: "NORMAL", content: "What can you tell me about Visual Communications?" }, uname: "user" },
-      { type: "READER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "bot" },
-      { type: "WRITER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "user" },
-      { type: "READER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "bot" },
-      { type: "WRITER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "user" },
-      { type: "READER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "bot" },
+      { id: "02", type: "WRITER", hour: "20:00", image: "", content: "What can you tell me about Visual Communications?", nodes: [], uname: "You", actions: [] },
+      { id: "03", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
+      { id: "04", type: "WRITER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "You", actions: [] },
+      { id: "05", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
+      { id: "06", type: "WRITER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "You", actions: [] },
+      { id: "07", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [], uname: "1Cademy Assistant", actions: [] },
     ]
   },
-  { date: "11/11/11", messages: [{ type: "READER", hour: "20:00", image: "", message: { type: "NORMAL", content: "klkljg" }, uname: "bot" }] },
+  { date: "11/11/11", messages: [{ id: "08", type: "READER", hour: "20:00", image: "", content: "klkljg", nodes: [{ type: "Idea", id: "dfdgfsdf", title: 'adasd' }], uname: "1Cademy Assistant", actions: [] }] },
 ]
 
 export const Chat = () => {
+  const [messagesObj, setMessagesObj] = useState<Message[]>([])
+  const [speakingMessageId, setSpeakingMessageId] = useState<string>("");
+  const chatElementRef = useRef<HTMLDivElement | null>(null)
+
+  const scrollToTheEnd = () => {
+    if (!chatElementRef.current) return
+    chatElementRef.current.scrollTop = chatElementRef.current.scrollHeight
+  }
+
+  const narrateMessage = useCallback((id: string, message: string) => {
+    if (!window.speechSynthesis.speaking) {
+      const msg = new SpeechSynthesisUtterance(message);
+      window.speechSynthesis.speak(msg);
+      setSpeakingMessageId(id);
+      msg.onend = () => {
+        setSpeakingMessageId("");
+      };
+    } else {
+      window.speechSynthesis.cancel();
+      setSpeakingMessageId("");
+    }
+  }, [])
+
+  useEffect(() => {
+    const idTimeout = setTimeout(() => {
+      setMessagesObj(MESSAGES)
+    }, 1000)
+    return () => clearTimeout(idTimeout)
+  }, [])
+
+  useEffect(() => {
+    scrollToTheEnd()
+  }, [messagesObj])
+
   return <Stack
     sx={{
       width: "420px",
@@ -76,7 +131,7 @@ export const Chat = () => {
           <Typography sx={{ fontSize: "18px", color: DESIGN_SYSTEM_COLORS.gray900, fontWeight: 500 }}>1Cademy Assistant</Typography>
           <Typography sx={{ fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray500, fontWeight: 400 }}>AI Powered</Typography>
         </Box>
-        <Button>Clear chat</Button>
+        {messagesObj.length > 0 && <Button onClick={() => setMessagesObj([])}>Clear chat</Button>}
       </Box>
     </Box>
 
@@ -87,22 +142,27 @@ export const Chat = () => {
 
     {/* messages */}
     <Stack
+      ref={chatElementRef}
       spacing="14px"
       sx={{
         // height: "358px",
         p: "12px 24px",
         overflowY: "auto",
+        scrollBehavior: "smooth",
         flexGrow: 1,
-        ...(!MESSAGES.length && {
+        ...(!messagesObj.length && {
           backgroundImage: `url(${chatImage})`,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
         })
       }}>
-      {MESSAGES.map(cur => {
+      {messagesObj.map(cur => {
         return <Fragment key={cur.date}>
           <Box>
-            <Divider>{cur.date}</Divider>
+            <Divider sx={{
+              ":before": { borderTop: `solid 1px ${DESIGN_SYSTEM_COLORS.notebookG100}` },
+              ":after": { borderTop: `solid 1px ${DESIGN_SYSTEM_COLORS.notebookG100}` }
+            }}>{cur.date}</Divider>
           </Box>
           {cur.messages.map(c => <Stack key={cur.date + c.hour} direction={c.type === 'READER' ? "row" : "row-reverse"} spacing="12px">
             {c.type === 'READER' && <CustomAvatar imageUrl={OneCademyAssistantLogo} alt='onecademy assistant logo' />}
@@ -110,17 +170,21 @@ export const Chat = () => {
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "7px" }}>
                 <Box sx={{ display: "flex", alignItems: "center", }}>
                   <Typography sx={{ fontWeight: 500, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{c.uname}</Typography>
-                  {c.type === 'READER' && <IconButton size='small' sx={{ p: "4px", ml: "4px" }}><VolumeUpIcon /></IconButton>}
+                  {c.type === 'READER' && <IconButton onClick={() => narrateMessage(c.id, c.content)} size='small' sx={{ p: "4px", ml: "4px" }}>
+                    {speakingMessageId === c.id ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                  </IconButton>}
                 </Box>
                 <Typography sx={{ fontWeight: 400, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray500 }}>{c.hour}</Typography>
               </Box>
               <Box sx={{ p: "10px 14px", borderRadius: c.type === "WRITER" ? "8px 0px 8px 8px" : "0px 8px 8px 8px", backgroundColor: c.type === "WRITER" ? DESIGN_SYSTEM_COLORS.orange100 : DESIGN_SYSTEM_COLORS.gray200 }}>
-                {c.message.content}
+                {c.content}
                 <Stack spacing={'12px'}>
-                  {c.message.type === 'HELP' && <>
-                    <Button variant='outlined' fullWidth sx={{ mt: "12px" }}>Let’s practise</Button>
-                    <Button variant='outlined' fullWidth>Teach me the content of this page</Button>
-                  </>}
+                  {c.actions.map(action => {
+                    if (action.type === 'HELP') return <>
+                      <Button variant='outlined' fullWidth sx={{ mt: "12px" }}>Let’s practise</Button>
+                      <Button variant='outlined' fullWidth>Teach me the content of this page</Button>
+                    </>
+                  })}
                 </Stack>
               </Box>
             </Box>

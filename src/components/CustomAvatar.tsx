@@ -20,7 +20,9 @@ export const CustomAvatar = ({ imageUrl, alt, size = "md" }: CustomAvatarProps) 
 
     return (
         <Box sx={{
+            minWidth: AVATAR_SIZE_COMPONENTS[size].wrapper,
             width: AVATAR_SIZE_COMPONENTS[size].wrapper,
+            minHeight: AVATAR_SIZE_COMPONENTS[size].wrapper,
             height: AVATAR_SIZE_COMPONENTS[size].wrapper,
             display: "grid",
             placeItems: "center",

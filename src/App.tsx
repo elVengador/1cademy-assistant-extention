@@ -52,7 +52,7 @@ function App() {
       </Box>
 
       {/* chat */}
-      <Chat />
+      {displayAssistant && <Chat />}
 
     </div >
   )
