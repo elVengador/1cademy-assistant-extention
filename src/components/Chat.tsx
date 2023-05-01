@@ -29,6 +29,7 @@ import { getFirestore } from 'firebase/firestore';
 import { useAuth } from '../utils/AuthContext';
 import { NodeType } from '../types';
 import NodeTypeIcon from './NodeTypeIcon';
+import { NodeLink } from './NodeLink';
 
 export type IAssitantRequestAction = "Practice" |
   "TeachContent" |
@@ -48,6 +49,11 @@ export type IAssitantRequestAction = "Practice" |
  * - EXPLANATION: content + button to continue explaining + button to stop explanation
  */
 // type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE";
+export type NodeLinkType = {
+  type: NodeType,
+  id: string,
+  title: string
+}
 type Message = {
   date: string,
   messages: {
@@ -56,11 +62,7 @@ type Message = {
     uname: string,
     image: string,
     content: string,
-    nodes: {
-      type: NodeType,
-      id: string,
-      title: string
-    }[],
+    nodes: NodeLinkType[],
     actions: {
       type: IAssitantRequestAction,
       title: string
@@ -246,22 +248,7 @@ export const Chat = () => {
               </Box>
               <Box sx={{ p: "10px 14px", borderRadius: c.type === "WRITER" ? "8px 0px 8px 8px" : "0px 8px 8px 8px", backgroundColor: c.type === "WRITER" ? DESIGN_SYSTEM_COLORS.orange100 : DESIGN_SYSTEM_COLORS.gray200 }}>
                 {c.nodes.length > 0 && <Stack spacing={'12px'} sx={{ mb: "10px" }}>
-                  {c.nodes.map((node, idx) => <Stack
-                    key={idx}
-                    spacing="8px"
-                    direction={'row'}
-                    alignItems={'center'}
-                    sx={{
-                      p: "10px 12px",
-                      backgroundColor: DESIGN_SYSTEM_COLORS.gray100,
-                      borderRadius: "8px",
-                      boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1)",
-                      cursor: "pointer",
-                      ":hover": { backgroundColor: DESIGN_SYSTEM_COLORS.primary50 }
-                    }}>
-                    <NodeTypeIcon nodeType={node.type} />
-                    <Typography sx={{ fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{node.title}</Typography>
-                  </Stack>)}
+                  {c.nodes.map((node) => <NodeLink key={node.id} title={node.title} type={node.type} id={node.id} />)}
                 </Stack>}
                 <Typography sx={{ fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray800 }}>{c.content}</Typography>
                 {c.actions.length > 0 && <Stack spacing={'12px'} sx={{ mt: "12px" }}>
