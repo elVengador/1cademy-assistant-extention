@@ -18,6 +18,7 @@ import {
   IconButton,
   InputBase,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 // import { Fragment, useState } from "react";
@@ -90,7 +91,7 @@ export const Chat = () => {
   const [messagesObj, setMessagesObj] = useState<Message[]>([])
   const [speakingMessageId, setSpeakingMessageId] = useState<string>("");
   const chatElementRef = useRef<HTMLDivElement | null>(null)
-  const [isLoading, setisLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const scrollToTheEnd = () => {
     if (!chatElementRef.current) return
@@ -112,8 +113,10 @@ export const Chat = () => {
   }, [])
 
   useEffect(() => {
+
     const idTimeout = setTimeout(() => {
       setMessagesObj(MESSAGES)
+      setIsLoading(false)
     }, 1000)
     return () => clearTimeout(idTimeout)
   }, [])
@@ -199,13 +202,17 @@ export const Chat = () => {
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "7px" }}>
                 <Box sx={{ display: "flex", alignItems: "center", }}>
                   <Typography sx={{ fontWeight: 500, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{c.uname}</Typography>
-                  {c.type === 'READER' && <IconButton onClick={() => narrateMessage(c.id, c.content)} size='small' sx={{ p: "4px", ml: "4px" }}>
-                    {speakingMessageId === c.id ? <VolumeOffIcon /> : <VolumeUpIcon />}
-                  </IconButton>}
+                  {c.type === 'READER' && <Tooltip title={speakingMessageId === c.id ? "Stop narrating" : "Narrate message"} placement='top'>
+                    <IconButton onClick={() => narrateMessage(c.id, c.content)} size='small' sx={{ p: "4px", ml: "4px" }}>
+                      {speakingMessageId === c.id ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                    </IconButton>
+                  </Tooltip>
+                  }
                 </Box>
                 <Typography sx={{ fontWeight: 400, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray500 }}>{c.hour}</Typography>
               </Box>
               <Box sx={{ p: "10px 14px", borderRadius: c.type === "WRITER" ? "8px 0px 8px 8px" : "0px 8px 8px 8px", backgroundColor: c.type === "WRITER" ? DESIGN_SYSTEM_COLORS.orange100 : DESIGN_SYSTEM_COLORS.gray200 }}>
+                {/* // TODO implement link Node */}
                 {c.content}
                 <Stack spacing={'12px'}>
                   {c.actions.map(action => {
@@ -213,6 +220,7 @@ export const Chat = () => {
                       <Button variant='outlined' fullWidth sx={{ mt: "12px" }}>Let’s practise</Button>
                       <Button variant='outlined' fullWidth>Teach me the content of this page</Button>
                     </>
+                    // TODO: implement other type of actions
                   })}
                 </Stack>
               </Box>
