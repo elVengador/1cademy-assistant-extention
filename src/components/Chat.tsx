@@ -3,10 +3,27 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import OneCademyAssistantLogo from '/1cademy-assistant.svg'
 import MicIcon from '@mui/icons-material/Mic';
 import chatImage from '/chat-image.svg'
-import { Box, Button, Divider, IconButton, InputBase, Stack, Typography } from '@mui/material'
+// import { Box, Button, Divider, IconButton, InputBase, Stack, Typography } from '@mui/material'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { CustomAvatar } from './CustomAvatar'
 import { DESIGN_SYSTEM_COLORS } from '../utils/colors';
+// import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+// import OneCademyAssistantLogo from "/1cademy-assistant.svg";
+// import MicIcon from "@mui/icons-material/Mic";
+// import chatImage from "/chat-image.svg";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  InputBase,
+  Stack,
+  Typography,
+} from "@mui/material";
+// import { Fragment, useState } from "react";
+// import { CustomAvatar } from "./CustomAvatar";
+// import { DESIGN_SYSTEM_COLORS } from "../utils/colors";
+import { RiveComponentMemoized } from "./RiveMemoized";
 
 export type NodeType =
   | "Relation"
@@ -29,7 +46,7 @@ export type NodeType =
  * - PRACTICE: content + button to remind later + begin practice
  * - EXPLANATION: content + button to continue explaining + button to stop explanation
  */
-type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE"
+type MessageType = "NORMAL" | "HELP" | "NODE" | "PRACTICE";
 type Message = {
   date: string,
   messages: {
@@ -51,7 +68,8 @@ type Message = {
 }
 const MESSAGES: Message[] = [
   {
-    date: "12/12/12", messages: [
+    date: "12/12/12",
+    messages: [
       {
         id: "01",
         type: "READER", hour: "20:00", image: "", content: "Hey Carl, How can I help you today? Select one of the following options or type your question.",
@@ -72,6 +90,7 @@ export const Chat = () => {
   const [messagesObj, setMessagesObj] = useState<Message[]>([])
   const [speakingMessageId, setSpeakingMessageId] = useState<string>("");
   const chatElementRef = useRef<HTMLDivElement | null>(null)
+  const [isLoading, setisLoading] = useState(true);
 
   const scrollToTheEnd = () => {
     if (!chatElementRef.current) return
@@ -156,7 +175,17 @@ export const Chat = () => {
           backgroundPosition: "center",
         })
       }}>
-      {messagesObj.map(cur => {
+      {isLoading && (
+        <Box sx={{ width: "300px", height: "300px", mx: "auto" }}>
+          <RiveComponentMemoized
+            src="./search.riv"
+            artboard="New Artboard"
+            animations={"Timeline 1"}
+            autoplay={true}
+          />
+        </Box>
+      )}
+      {!isLoading && messagesObj.map(cur => {
         return <Fragment key={cur.date}>
           <Box>
             <Divider sx={{
@@ -210,5 +239,4 @@ export const Chat = () => {
       </Box>
     </Box>
   </Stack>
-
 }

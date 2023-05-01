@@ -6,3 +6,14 @@ body {
   padding: 0px;
   margin: 0px;
 }
+.rive-canvas {
+  width: inherit;
+  height: inherit;
+
+  
+}
+
+.rive-canvas-hidden {
+  opacity: 0;
+
+}
