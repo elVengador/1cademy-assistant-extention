@@ -66,7 +66,7 @@ function App() {
   // });
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#123", position: "relative", padding: "0x" }}>
+    <div style={{ width: "100vw", height: "100vh", position: "relative", padding: "0x" }}>
 
       {/* floating buttons */}
       <Box sx={{ position: "absolute", bottom: "38px", right: "38px" }}>
