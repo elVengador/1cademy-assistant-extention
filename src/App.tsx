@@ -1,23 +1,69 @@
-import OneCademyAssistantLogo from '/1cademy-assistant.svg'
 import { brandingLightTheme } from './utils/brandingTheme'
 import './styles.css'
 
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 import { Box, Button, Divider, IconButton, InputBase, Stack, TextField, ThemeProvider, Tooltip, tooltipClasses, TooltipProps, Typography } from "@mui/material"
-import { Fragment, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { DESIGN_SYSTEM_COLORS } from './utils/colors';
 import { CustomAvatar } from './components/CustomAvatar';
 import { Chat } from './components/Chat';
+import { LOGO_URL } from './utils/constants';
 // import { getFirebaseApp, initFirebaseClientSDK } from './utils/firestoreClient.config';
 
 
 function App() {
+  console.log('app loaded')
   const [displayAssistant, setDisplayAssistant] = useState(false)
   const [selectedText, setSelectedText] = useState('')
   // const getText = (text: string) => {
 
   // }
+
+  // useEffect(() => {
+  //   chrome.tabs && chrome.tabs.query({
+  //     active: true,
+  //     currentWindow: true
+  //   }, tabs => {
+  //     /**
+  //      * Sends a single message to the content script(s) in the specified tab,
+  //      * with an optional callback to run when a response is sent back.
+  //      *
+  //      * The runtime.onMessage event is fired in each content script running
+  //      * in the specified tab for the current extension.
+  //      */
+  //     chrome.tabs.connect(tabs[0].id || 0).onMessage.addListener((message) => {
+  //       console.log('react:', message)
+  //     })
+  //   });
+  // }, [])
+
+
+  // useEffect(() => {
+  //   /**
+  //    * We can't use "chrome.runtime.sendMessage" for sending messages from React.
+  //    * For sending messages from React we need to specify which tab to send it to.
+  //    */
+  //   chrome.tabs && chrome.tabs.query({
+  //     active: true,
+  //     currentWindow: true
+  //   }, tabs => {
+  //     /**
+  //      * Sends a single message to the content script(s) in the specified tab,
+  //      * with an optional callback to run when a response is sent back.
+  //      *
+  //      * The runtime.onMessage event is fired in each content script running
+  //      * in the specified tab for the current extension.
+  //      */
+  //     chrome.tabs.sendMessage(
+  //       tabs[0].id || 0,
+  //       { type: 'GET_DOM' } as DOMMessage,
+  //       (response: DOMMessageResponse) => {
+  //         setTitle(response.title);
+  //         setHeadlines(response.headlines);
+  //       });
+  //   });
+  // });
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#123", position: "relative", padding: "0x" }}>
@@ -41,7 +87,7 @@ function App() {
           <CloseIcon />
         </Button>}
 
-        <Button
+        {/* <Button
           onClick={() => setSelectedText(prev => prev ? '' : 'Loreman df asldkfaslflsdj fljals')}
           sx={{
             minWidth: "0px",
@@ -56,7 +102,7 @@ function App() {
             }
           }}>
           S
-        </Button>
+        </Button> */}
 
         {!displayAssistant && <CustomWidthTooltip open={Boolean(selectedText)} title={<Box sx={{ textAlign: "center" }}>I can clarify the selected text and respond to your queries.</Box>} placement='top'  >
           <Button
@@ -72,7 +118,7 @@ function App() {
                 backgroundColor: DESIGN_SYSTEM_COLORS.gray300,
               }
             }}>
-            <img src={OneCademyAssistantLogo} alt="onecademy assistant logo" style={{ width: "32px", height: "32px" }} />
+            <img src={LOGO_URL} alt="onecademy assistant logo" style={{ width: "32px", height: "32px" }} />
           </Button>
         </CustomWidthTooltip>}
       </Box>

@@ -7,10 +7,9 @@ import { initFirebaseClientSDK } from './utils/firestoreClient.config'
 initFirebaseClientSDK()
 
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById('tmp') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
-      {/* <h1>fa</h1> */}
       <App />
     </AuthProvider>
   </React.StrictMode>,

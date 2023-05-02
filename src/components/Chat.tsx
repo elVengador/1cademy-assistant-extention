@@ -1,6 +1,6 @@
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import OneCademyAssistantLogo from '/1cademy-assistant.svg'
+// import OneCademyAssistantLogo from '/1cademy-assistant.svg'
 import MicIcon from '@mui/icons-material/Mic';
 import chatImage from '/chat-image.svg'
 // import { Box, Button, Divider, IconButton, InputBase, Stack, Typography } from '@mui/material'
@@ -30,6 +30,7 @@ import { useAuth } from '../utils/AuthContext';
 import { NodeType } from '../types';
 import NodeTypeIcon from './NodeTypeIcon';
 import { NodeLink } from './NodeLink';
+import { CHAT_BACKGROUND_IMAGE_URL, LOGO_URL, SEARCH_ANIMATION_URL } from '../utils/constants';
 
 export type IAssitantRequestAction = "Practice" |
   "TeachContent" |
@@ -182,7 +183,7 @@ export const Chat = () => {
       gap: "11px",
       borderBottom: `solid 1px ${DESIGN_SYSTEM_COLORS.gray300}`
     }}>
-      <CustomAvatar imageUrl={OneCademyAssistantLogo} alt='onecademy assistant logo' size='lg' />
+      <CustomAvatar imageUrl={LOGO_URL} alt='onecademy assistant logo' size='lg' />
       <Box sx={{ display: "flex", alignContent: "center", justifyContent: "space-between" }}>
         <Box>
           <Typography sx={{ fontSize: "18px", color: DESIGN_SYSTEM_COLORS.gray900, fontWeight: 500 }}>1Cademy Assistant</Typography>
@@ -208,7 +209,7 @@ export const Chat = () => {
         scrollBehavior: "smooth",
         flexGrow: 1,
         ...(!messagesObj.length && {
-          backgroundImage: `url(${chatImage})`,
+          backgroundImage: `url(${CHAT_BACKGROUND_IMAGE_URL})`,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
         })
@@ -216,7 +217,7 @@ export const Chat = () => {
       {isLoading && (
         <Box sx={{ width: "300px", height: "300px", mx: "auto" }}>
           <RiveComponentMemoized
-            src="./search.riv"
+            src={SEARCH_ANIMATION_URL}
             artboard="New Artboard"
             animations={"Timeline 1"}
             autoplay={true}
@@ -232,16 +233,16 @@ export const Chat = () => {
             }}>{cur.date}</Divider>
           </Box>
           {cur.messages.map(c => <Stack key={c.id} direction={c.type === 'READER' ? "row" : "row-reverse"} spacing="12px">
-            {c.type === 'READER' && <CustomAvatar imageUrl={OneCademyAssistantLogo} alt='onecademy assistant logo' />}
+            {c.type === 'READER' && <CustomAvatar imageUrl={LOGO_URL} alt='onecademy assistant logo' />}
             <Box>
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: "7px" }}>
                 <Box sx={{ display: "flex", alignItems: "center", }}>
                   <Typography sx={{ fontWeight: 500, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray900 }}>{c.uname}</Typography>
-                  {c.type === 'READER' && <Tooltip title={speakingMessageId === c.id ? "Stop narrating" : "Narrate message"} placement='top'>
+                  {c.type === 'READER' && /* && <Tooltip title={speakingMessageId === c.id ? "Stop narrating" : "Narrate message"} placement='top'> */
                     <IconButton onClick={() => narrateMessage(c.id, c.content)} size='small' sx={{ p: "4px", ml: "4px" }}>
                       {speakingMessageId === c.id ? <VolumeOffIcon sx={{ fontSize: "16px" }} /> : <VolumeUpIcon sx={{ fontSize: "16px" }} />}
                     </IconButton>
-                  </Tooltip>
+
                   }
                 </Box>
                 <Typography sx={{ fontWeight: 400, fontSize: "14px", color: DESIGN_SYSTEM_COLORS.gray500 }}>{c.hour}</Typography>
