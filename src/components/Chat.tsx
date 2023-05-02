@@ -221,12 +221,12 @@ export const Chat = () => {
   const [speakingMessageId, setSpeakingMessageId] = useState<string>("");
   const chatElementRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const mode = useTheme();
+  const { mode } = useTheme();
   const scrollToTheEnd = () => {
     if (!chatElementRef.current) return;
     chatElementRef.current.scrollTop = chatElementRef.current.scrollHeight;
   };
-  
+
   const narrateMessage = useCallback((id: string, message: string) => {
     if (!window.speechSynthesis.speaking) {
       const msg = new SpeechSynthesisUtterance(message);
@@ -262,8 +262,15 @@ export const Chat = () => {
         bottom: "112px",
         right: "38px",
         borderRadius: "8px",
-        backgroundColor: DESIGN_SYSTEM_COLORS.gray50,
-        border: `solid 2px ${DESIGN_SYSTEM_COLORS.primary200}`,
+        backgroundColor:
+          mode === "dark"
+            ? DESIGN_SYSTEM_COLORS.notebookG900
+            : DESIGN_SYSTEM_COLORS.gray50,
+        border: `solid 2px ${
+          mode === "light"
+            ? DESIGN_SYSTEM_COLORS.primary200
+            : DESIGN_SYSTEM_COLORS.primary400
+        }`,
       }}
     >
       {/* header */}
@@ -276,7 +283,11 @@ export const Chat = () => {
           alignItems: "center",
           gridTemplateColumns: "48px auto",
           gap: "11px",
-          borderBottom: `solid 1px ${DESIGN_SYSTEM_COLORS.gray300}`,
+          borderBottom: `solid 1px ${
+            mode === "light"
+              ? DESIGN_SYSTEM_COLORS.gray300
+              : DESIGN_SYSTEM_COLORS.notebookG500
+          }`,
         }}
       >
         <CustomAvatar
@@ -295,7 +306,10 @@ export const Chat = () => {
             <Typography
               sx={{
                 fontSize: "18px",
-                color: DESIGN_SYSTEM_COLORS.gray900,
+                color:
+                  mode === "dark"
+                    ? DESIGN_SYSTEM_COLORS.gray25
+                    : DESIGN_SYSTEM_COLORS.gray900,
                 fontWeight: 500,
               }}
             >
@@ -304,7 +318,11 @@ export const Chat = () => {
             <Typography
               sx={{
                 fontSize: "14px",
-                color: DESIGN_SYSTEM_COLORS.gray500,
+                color:
+                  mode === "dark"
+                    ? DESIGN_SYSTEM_COLORS.gray100
+                    : DESIGN_SYSTEM_COLORS.gray500,
+
                 fontWeight: 400,
               }}
             >
@@ -325,11 +343,21 @@ export const Chat = () => {
           p: "10px 24px",
           display: "grid",
           placeItems: "center",
-          borderBottom: `solid 1px ${DESIGN_SYSTEM_COLORS.gray300}`,
+          borderBottom: `solid 1px ${
+            mode === "light"
+              ? DESIGN_SYSTEM_COLORS.gray300
+              : DESIGN_SYSTEM_COLORS.notebookG500
+          }`,
         }}
       >
         <Typography
-          sx={{ color: DESIGN_SYSTEM_COLORS.gray500, fontSize: "12px" }}
+          sx={{
+            color:
+              mode === "light"
+                ? DESIGN_SYSTEM_COLORS.gray500
+                : DESIGN_SYSTEM_COLORS.gray50,
+            fontSize: "12px",
+          }}
         >
           This conversation is recorded and can be viewable by instructors
         </Typography>
@@ -370,14 +398,32 @@ export const Chat = () => {
                   <Divider
                     sx={{
                       ":before": {
-                        borderTop: `solid 1px ${DESIGN_SYSTEM_COLORS.notebookG100}`,
+                        borderTop: `solid 1px ${
+                          mode === "light"
+                            ? DESIGN_SYSTEM_COLORS.notebookG100
+                            : DESIGN_SYSTEM_COLORS.notebookG500
+                        }`,
                       },
                       ":after": {
-                        borderTop: `solid 1px ${DESIGN_SYSTEM_COLORS.notebookG100}`,
+                        borderTop: `solid 1px ${
+                          mode === "light"
+                            ? DESIGN_SYSTEM_COLORS.notebookG100
+                            : DESIGN_SYSTEM_COLORS.notebookG500
+                        }`,
                       },
                     }}
                   >
-                    {cur.date}
+                    <Typography
+                      sx={{
+                        color:
+                          mode === "dark"
+                            ? DESIGN_SYSTEM_COLORS.gray25
+                            : DESIGN_SYSTEM_COLORS.gray900,
+                      }}
+                    >
+                      {" "}
+                      {cur.date}
+                    </Typography>
                   </Divider>
                 </Box>
                 {cur.messages.map((c) => (
@@ -406,7 +452,10 @@ export const Chat = () => {
                             sx={{
                               fontWeight: 500,
                               fontSize: "14px",
-                              color: DESIGN_SYSTEM_COLORS.gray900,
+                              color:
+                                mode === "dark"
+                                  ? DESIGN_SYSTEM_COLORS.gray25
+                                  : DESIGN_SYSTEM_COLORS.gray900,
                             }}
                           >
                             {c.uname}
@@ -419,9 +468,25 @@ export const Chat = () => {
                               sx={{ p: "4px", ml: "4px" }}
                             >
                               {speakingMessageId === c.id ? (
-                                <VolumeOffIcon sx={{ fontSize: "16px" }} />
+                                <VolumeOffIcon
+                                  sx={{
+                                    fontSize: "16px",
+                                    color:
+                                      mode === "dark"
+                                        ? DESIGN_SYSTEM_COLORS.gray25
+                                        : DESIGN_SYSTEM_COLORS.gray900,
+                                  }}
+                                />
                               ) : (
-                                <VolumeUpIcon sx={{ fontSize: "16px" }} />
+                                <VolumeUpIcon
+                                  sx={{
+                                    fontSize: "16px",
+                                    color:
+                                      mode === "dark"
+                                        ? DESIGN_SYSTEM_COLORS.gray25
+                                        : DESIGN_SYSTEM_COLORS.gray900,
+                                  }}
+                                />
                               )}
                             </IconButton>
                           )}
@@ -430,7 +495,10 @@ export const Chat = () => {
                           sx={{
                             fontWeight: 400,
                             fontSize: "14px",
-                            color: DESIGN_SYSTEM_COLORS.gray500,
+                            color:
+                              mode === "dark"
+                                ? DESIGN_SYSTEM_COLORS.gray25
+                                : DESIGN_SYSTEM_COLORS.gray900,
                           }}
                         >
                           {c.hour}
@@ -446,7 +514,9 @@ export const Chat = () => {
                           backgroundColor:
                             c.type === "WRITER"
                               ? DESIGN_SYSTEM_COLORS.orange100
-                              : DESIGN_SYSTEM_COLORS.gray200,
+                              : mode === "light"
+                              ? DESIGN_SYSTEM_COLORS.gray200
+                              : DESIGN_SYSTEM_COLORS.notebookG600,
                         }}
                       >
                         {c.nodes.length > 0 && (
@@ -464,7 +534,12 @@ export const Chat = () => {
                         <Typography
                           sx={{
                             fontSize: "14px",
-                            color: DESIGN_SYSTEM_COLORS.gray800,
+                            color:
+                              mode === "dark"
+                                ? c.type === "WRITER"
+                                  ? DESIGN_SYSTEM_COLORS.notebookG700
+                                  : DESIGN_SYSTEM_COLORS.gray25
+                                : DESIGN_SYSTEM_COLORS.gray900,
                           }}
                         >
                           {c.content}
